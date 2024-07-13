@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('price', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('image', models.ImageField(blank=True, null=True, upload_to='product_images/')),
                 ('date_added', models.DateTimeField(auto_now_add=True)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.category')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='store.category')),
                 ('seller', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

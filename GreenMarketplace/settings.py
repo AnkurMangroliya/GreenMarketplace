@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "cart.apps.CartConfig",
     "Messaging.apps.MessagingConfig",
-    "products.apps.ProductsConfig",
+    "store.apps.ProductsConfig",
     "search.apps.SearchConfig"
 ]
 
