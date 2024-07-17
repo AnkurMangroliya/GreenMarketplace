@@ -7,6 +7,7 @@ from .views import activate
 from .views import resetpassword
 from .views import resetpassword_validate
 from .views import forgotpassword
+from .views import edit_profile
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -18,4 +19,5 @@ urlpatterns = [
     path('resetpassword_validate/<uidb64>/<token>/', resetpassword_validate, name='resetpassword_validate'),
     path('forgotpassword/', forgotpassword, name='forgotpassword'),
     path('resetpassword', resetpassword, name='resetpassword'),
+    path('edit_profile/', edit_profile, name='edit_profile'),
 ]

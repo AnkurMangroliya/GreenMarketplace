@@ -6,12 +6,12 @@ from accounts.models import Account
 
 # Define class of product to collect data related to product like name, description, price and image etc..
 class Product(models.Model):
-    product_name = models.CharField(max_length=200, unique=True)
-    slug = models.SlugField(max_length=200, unique=True)
+    product_name = models.CharField(max_length=200, unique=True, null=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True, null=True, blank=True)
     description = models.TextField(max_length=500, blank=True)
     price = models.IntegerField()
-    images = models.ImageField(upload_to='photos/products')
-    stock = models.IntegerField()
+    images = models.ImageField(upload_to='photos/products', null=True, blank=True)
+    stock = models.IntegerField(default=0)
     is_available = models.BooleanField(default=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
