@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="33502440-572a-420b-93c8-959a8db00cca" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/store/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +32,7 @@
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/ankur/PycharmProjects/mysiteS24",
+    "last_opened_file_path": "C:/Users/ankur/PycharmProjects/GreenMarketplace",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -88,7 +89,8 @@
       <workItem from="1720674064902" duration="2128000" />
       <workItem from="1720890076590" duration="772000" />
       <workItem from="1720977783152" duration="1506000" />
-      <workItem from="1721134714361" duration="323000" />
+      <workItem from="1721134714361" duration="705000" />
+      <workItem from="1721258144735" duration="91000" />
     </task>
     <servers />
   </component>
