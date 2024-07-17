@@ -38,8 +38,6 @@ class Account(AbstractBaseUser):
     def __str__(self):
         return self.email
 
-
-
 class UserProfile(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE)
     address_line_1 = models.CharField(blank=True, max_length=100)
@@ -51,3 +49,6 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.first_name
+
+    def full_address(self):
+        return f'{self.address_line_1} {self.address_line_2}'
