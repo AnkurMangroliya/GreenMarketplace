@@ -71,7 +71,6 @@ def login(request):
                     return redirect(nextpage)
             except:
                 return redirect('dashboard')
-            # return redirect('dashboard')
         else:
             messages.error(request, 'Invalid login credentials')
             return redirect('login')
@@ -102,7 +101,7 @@ def activate(request, uidb64, token):
 def dashboard(request):
     userprofile = UserProfile.objects.get(user_id=request.user.id)
     context = {
-        'userprofile': userprofile,
+        's': userprofile,
     }
     return render(request, 'accounts/dashboard.html', context)
 

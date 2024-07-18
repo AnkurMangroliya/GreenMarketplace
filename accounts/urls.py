@@ -22,5 +22,4 @@ urlpatterns = [
     path('resetpassword', resetpassword, name='resetpassword'),
     path('edit_profile/', edit_profile, name='edit_profile'),
     path('change_password/', change_password, name='change_password'),
-
 ]
