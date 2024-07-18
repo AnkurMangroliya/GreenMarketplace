@@ -8,6 +8,7 @@ from .views import resetpassword
 from .views import resetpassword_validate
 from .views import forgotpassword
 from .views import edit_profile
+from .views import change_password
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -20,4 +21,6 @@ urlpatterns = [
     path('forgotpassword/', forgotpassword, name='forgotpassword'),
     path('resetpassword', resetpassword, name='resetpassword'),
     path('edit_profile/', edit_profile, name='edit_profile'),
+    path('change_password/', change_password, name='change_password'),
+
 ]
