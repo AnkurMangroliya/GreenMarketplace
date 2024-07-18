@@ -1,7 +1,7 @@
 import datetime
 from django.shortcuts import render, redirect
 
-from cart.models import CartItem
+from carts.models import CartItem
 from .forms import OrderForm
 from .models import Order
 

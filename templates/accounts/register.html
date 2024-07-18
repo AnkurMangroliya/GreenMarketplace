@@ -4,10 +4,13 @@
 <section class="section-content padding-y">
 
 	<div class="card mx-auto" style="max-width:520px; margin-top:40px;">
-      <article class="card-body">
-		<header class="mb-4"><h4 class="card-title">Sign up</h4></header>
-		<form action="{% url 'register' %}" method="POST">
-			{% csrf_token %}
+		<article class="card-body">
+			{% include 'includes/alerts.html' %}
+			<header class="mb-4">
+				<h4 class="card-title">Sign up</h4>
+			</header>
+			<form action="{% url 'register' %}" method="POST">
+				{% csrf_token %}
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<label>First name</label>
@@ -20,33 +23,33 @@
 				</div>
 				<div class="form-row">
 					<div class="form-group col-md-6">
-					  <label>Email address</label>
+						<label>Email address</label>
 						{{ form.email }}
-					</div> 
+					</div>
 					<div class="form-group col-md-6">
-					  <label>Phone number</label>
-					  	{{ form.phone_number }}
+						<label>Phone number</label>
+						{{ form.phone_number }}
 					</div>
 				</div>
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<label>Create password</label>
-							{{ form.password }}
-					</div> 
+						{{ form.password }}
+					</div>
 					<div class="form-group col-md-6">
 						<label>Repeat password</label>
-					    	{{ form.confirm_password }}
-					</div> 
+						{{ form.confirm_password }}
+					</div>
 				</div>
-			    <div class="form-group">
-			        <button type="submit" class="btn btn-primary btn-block">Register</button>
-			    </div> 
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-block">Register</button>
+				</div>
 				{{ form.email.errors }}
 				{{ form.non_field_errors }}
 			</form>
 		</article>
-    </div> 
-    <p class="text-center mt-4">Have an account? <a href="{% url 'login' %}">Log In</a></p>
-    <br><br>
+	</div>
+	<p class="text-center mt-4">Have an account? <a href="{% url 'login' %}">Log In</a></p>
+	<br><br>
 </section>
 {% endblock %}

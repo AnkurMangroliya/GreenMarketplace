@@ -2,10 +2,8 @@ from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, ReviewRating, ProductGallery
-from .forms import ReviewForm
 from category.models import Category
 from carts.models import CartItem
-from orders.models import OrderProduct
 from carts.views import _cart_id
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
@@ -39,14 +37,7 @@ def product_detail(request, category_slug, product_slug):
         in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), product=single_product).exists()
     except Exception as e:
         raise e
-    if request.user.is_authenticated:
-        try:
-            orderproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
-        except OrderProduct.DoesNotExist:
-            orderproduct = None
-    else:
-        orderproduct = None
-
+    
     #     pega as reviews
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
 
