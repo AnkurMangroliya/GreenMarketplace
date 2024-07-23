@@ -11,7 +11,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .forms import RegistrationForm, UserForm, UserProfileForm
 from .models import Account, UserProfile
 import requests
-
+from .models import UserActivity, PageVisit
+from django.utils.timezone import now, timedelta
 
 def register(request):
     if request.method == 'POST':
@@ -100,8 +101,13 @@ def activate(request, uidb64, token):
 @login_required(login_url='login')
 def dashboard(request):
     userprofile = UserProfile.objects.get(user_id=request.user.id)
+    active_threshold = now() - timedelta(minutes=5)
+    active_users = UserActivity.objects.filter(last_activity__gte=active_threshold).count()
+    total_visits = PageVisit.objects.count()
     context = {
-        's': userprofile,
+        'userprofile': userprofile,
+        'active_users': active_users,
+        'total_visits': total_visits,
     }
     return render(request, 'accounts/dashboard.html', context)
 

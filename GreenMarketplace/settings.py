@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "carts.apps.CartConfig",
     "Messaging.apps.MessagingConfig",
-    "store.apps.ProductsConfig",
+    "store.apps.StoreConfig",
     "search.apps.SearchConfig",
     "category",
     "orders",
@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.UserActivityMiddleware'
 ]
 
 ROOT_URLCONF = 'GreenMarketplace.urls'
