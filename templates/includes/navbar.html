@@ -1,14 +1,39 @@
 {% load static %}
 <header class="section-header">
+
     <section class="header-main border-bottom">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-2 col-md-3 col-6">
                     <a href="{% url 'home' %}" class="brand-wrap">
                         <img class="logo" src="{% static '/images/logo.png' %}">
-                    </a> 
+                    </a>
                 </div>
+                <div class="col-lg col-sm col-md col-6 flex-grow-0">
+                    <div class="category-wrap dropdown d-inline-block float-right">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i> All category
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{% url 'store' %}">All products</a>
+                            {% for category in links %}
+                                <a class="dropdown-item" href="{{ category.get_url }}">
+                                    {{ category.category_name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div> 
+                </div> 
+                <a href="{% url 'store' %}" class="btn btn-outline-primary">Store</a>
                 <div class="col-lg  col-md-6 col-sm-12 col">
+
+                    <form action="{% url 'search' %}" class="search" method="GET">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control"
+                                   style="width:60%;" id="search-bar" placeholder="Search" name="keyword">
+                            <div id="suggestions"></div>
+                        </div>
+                    </form> 
 
                 </div> 
                 <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
@@ -30,9 +55,47 @@
                                 </div>
                              </div>
                         {% endif %}
-                    </div>
-                </div>
+                        <a href="{% url 'cart' %}" class="widget-header pl-3 ml-3">
+                            <div class="icon icon-sm rounded-circle border"><i class="fa fa-shopping-cart"></i></div>
+                            <span class="badge badge-pill badge-danger notify">{{ cart_count }}</span>
+                        </a>
+                    </div> 
+                </div> 
             </div>
         </div>
     </section>
-</header>
+</header> 
+<script>
+    document.getElementById('search-bar').addEventListener('input', function () {
+        let query = this.value;
+        if (query.length > 2) {
+            fetch(`/store/search_suggestions/?q=${query}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let suggestions = document.getElementById('suggestions');
+                    suggestions.innerHTML = '';
+                    let products = data.products;
+                    if (products.length > 0) {
+                        suggestions.style.display = 'block';
+                        products.forEach(product => {
+                            let div = document.createElement('div');
+                            div.textContent = `${product.name} - $${product.price}`;
+                            div.addEventListener('click', function () {
+                                document.getElementById('search-bar').value = product.name;
+                                suggestions.style.display = 'none';
+                            });
+                            suggestions.appendChild(div);
+                        });
+                    } else {
+                        suggestions.style.display = 'none';
+                    }
+                });
+        } else {
+            document.getElementById('suggestions').style.display = 'none';
+        }
+    });
+</script>

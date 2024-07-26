@@ -3,13 +3,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-
 from .forms import RegistrationForm, UserForm, UserProfileForm
 from .models import Account, UserProfile
+from carts.models import Cart, CartItem
+from orders.models import Order, OrderProduct
+from carts.views import _cart_id
 import requests
 from .models import UserActivity, PageVisit
 from django.utils.timezone import now, timedelta
@@ -18,6 +21,7 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
+
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             phone_number = form.cleaned_data['phone_number']
@@ -34,7 +38,6 @@ def register(request):
             profile.profile_picture = 'default/default-user.png'
             profile.save()
 
-            # USER ACTIVATION
             current_site = get_current_site(request)
             mail_subject = 'Please activate your account'
             message = render_to_string('accounts/account_verification_email.html', {
@@ -100,11 +103,14 @@ def activate(request, uidb64, token):
 
 @login_required(login_url='login')
 def dashboard(request):
+    orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
+    orders_count = orders.count()
     userprofile = UserProfile.objects.get(user_id=request.user.id)
     active_threshold = now() - timedelta(minutes=5)
     active_users = UserActivity.objects.filter(last_activity__gte=active_threshold).count()
     total_visits = PageVisit.objects.count()
     context = {
+        'orders_count': orders_count,
         'userprofile': userprofile,
         'active_users': active_users,
         'total_visits': total_visits,
@@ -166,6 +172,14 @@ def resetpassword(request):
         return render(request, 'accounts/resetpassword.html')
 
 @login_required(login_url='login')
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'accounts/my_orders.html', context)
+
+@login_required(login_url='login')
 def edit_profile(request):
     userprofile = get_object_or_404(UserProfile, user=request.user)
     if request.method == 'POST':
@@ -198,6 +212,7 @@ def change_password(request):
             if success:
                 user.set_password(new_password)
                 user.save()
+                # auth.Logout(request)
                 messages.success(request, 'Password Updated Successfully.')
                 return redirect('change_password')
             else:
@@ -207,3 +222,17 @@ def change_password(request):
             messages.error(request, 'Password does not match!')
             return redirect('change_password')
     return render(request, 'accounts/change_password.html')
+
+@login_required(login_url='login')
+def order_detail(request, order_id):
+    order_details = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+    subtotal = 0
+    for i in order_details:
+        subtotal += i.product_price * i.quantity
+    context = {
+        'order_detail': order_details,
+        'order': order,
+        'subtotal': subtotal,
+    }
+    return render(request, 'accounts/order_detail.html', context)

@@ -3,7 +3,9 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, ReviewRating, ProductGallery
 from category.models import Category
+from .forms import ReviewForm
 from carts.models import CartItem
+from orders.models import OrderProduct
 from carts.views import _cart_id
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
@@ -19,7 +21,6 @@ def store(request, category_slug=None):
         paged_products = paginator.get_page(page)
         product_count = products.count()
     else:
-        # mostra apenas produtos disponiveis e os ordena pelo id
         products = Product.objects.all().filter(is_available=True).order_by('id')
         paginator = Paginator(products, 3)
         page = request.GET.get('page')
@@ -33,15 +34,18 @@ def store(request, category_slug=None):
 def product_detail(request, category_slug, product_slug):
     try:
         single_product = Product.objects.get(category__slug=category_slug, slug=product_slug)
-        # verifica se o item esta no carrinho
         in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), product=single_product).exists()
     except Exception as e:
         raise e
-    
-    #     pega as reviews
+    if request.user.is_authenticated:
+        try:
+            orderproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
+        except OrderProduct.DoesNotExist:
+            orderproduct = None
+    else:
+        orderproduct = None
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
 
-    # product gallery
     product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
 
     context = {'single_product': single_product,

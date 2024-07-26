@@ -1,0 +1,102 @@
+.truncated-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    margin: 0;
+    padding: 0;
+}
+
+#suggestions {
+    top: 100%;
+    display: none;
+    position: absolute;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#suggestions div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#suggestions div:hover {
+    background-color: #e9ecef;
+}
+
+.search-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Hide radio button */
+
+.rate > input{
+    display:none;
+}
+
+.rate {
+   display:inline-block;
+   border:0;
+}
+
+.rate > label{
+    float:right;
+}
+
+/* Showing the stars */
+.rate > label:before{
+    display:inline-block;
+    font-size:1.1rem;
+    font-family:FontAwesome;
+    content:"\f005";
+    margin:0;
+    padding:0.3rem .2rem;
+    cursor: pointer;
+}
+
+/* Half star */
+.rate .half:before{
+    content: "\f089";
+    position: absolute;
+    padding-right: 0;
+}
+
+/* Click and hover */
+input:checked ~ label, label:hover ~ label{
+    color:#ffb503;
+}
+
+/* hover highlight */
+input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:hover ~ label,
+label:hover ~ input:checked ~ label{
+    color:#cc9000;
+}
+
+.rating-star i{
+  color: #ffb503 !important;
+}
+
+
+ul.thumb{
+    margin: 0 auto;
+    padding: 0;
+    float: left;
+}
+
+ul.thumb li{
+    list-style: none;
+    margin: 10px;
+}
+
+ul.thumb li img{
+    width: 80px;
+    height: 80px;
+    border: 1px solid grey;
+}
