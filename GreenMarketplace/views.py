@@ -3,10 +3,11 @@ from store.models import Product, ReviewRating
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.db.models import Avg
 
 def home(request):
     reviews = None
-    products = Product.objects.all().filter(is_available=True).order_by('created_date')
+    products = Product.objects.filter(is_available=True).annotate(avg_rating=Avg('reviewrating__rating')).order_by('-avg_rating', '-created_date')
     for product in products:
         reviews = ReviewRating.objects.filter(product_id=product.id, status=True)
     context = {'products': products,

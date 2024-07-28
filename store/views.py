@@ -3,11 +3,13 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, ReviewRating, ProductGallery
 from category.models import Category
-from .forms import ReviewForm
+from .forms import ReviewForm, ProductForm
+from django.contrib.auth.decorators import login_required
 from carts.models import CartItem
 from orders.models import OrderProduct
 from carts.views import _cart_id
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import JsonResponse
 
 
 def store(request, category_slug=None):
@@ -16,19 +18,38 @@ def store(request, category_slug=None):
     if category_slug is not None:
         categories = get_object_or_404(Category, slug=category_slug)
         products = Product.objects.filter(category=categories, is_available=True)
-        paginator = Paginator(products, 1)
+        paginator = Paginator(products, 9)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
         product_count = products.count()
     else:
         products = Product.objects.all().filter(is_available=True).order_by('id')
-        paginator = Paginator(products, 3)
+        paginator = Paginator(products, 9)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
         product_count = products.count()
     context = {'products': paged_products,
                'product_count': product_count}
     return render(request, 'store/store.html', context)
+
+@login_required
+def add_product(request):
+    if not request.user.is_seller:
+        return redirect('store')
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.save()
+            return redirect('store')
+    else:
+        form = ProductForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'store/add_product.html', context)
 
 
 def product_detail(request, category_slug, product_slug):
@@ -78,8 +99,11 @@ def submit_review(request, product_id):
         try:
             reviews = ReviewRating.objects.get(user__id=request.user.id, product__id=product_id)
             form = ReviewForm(request.POST, instance=reviews)
-            form.save()
-            messages.success(request, 'Thanks! Your review been updated')
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Thanks! Your review has been updated')
+            else:
+                messages.error(request, 'Error updating your review')
             return redirect(url)
         except ReviewRating.DoesNotExist:
             form = ReviewForm(request.POST)
@@ -94,3 +118,18 @@ def submit_review(request, product_id):
                 data.save()
                 messages.success(request, 'Thanks! Your review been submitted')
                 return redirect(url)
+            else:
+                messages.error(request, 'Error submitting your review')
+            return redirect(url)
+    else:
+        return redirect(url)
+
+def search_suggestions(request):
+    query = request.GET.get('q', '')
+    if query:
+        products = Product.objects.filter(product_name__icontains=query)
+    else:
+        products = Product.objects.all()
+
+    results = [{'id': product.id, 'name': product.product_name, 'price': product.price} for product in products]
+    return JsonResponse({'products': results})

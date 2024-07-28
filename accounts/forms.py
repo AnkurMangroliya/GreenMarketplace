@@ -11,6 +11,9 @@ class RegistrationForm(forms.ModelForm):
         'placeholder': 'Confirm Password',
         'class': 'form-control'
     }))
+    is_seller = forms.BooleanField(required=False, label='Register as a Seller', widget=forms.CheckboxInput(attrs={
+        'class': 'form-check-input'
+    }))
 
     class Meta:
         model = Account

@@ -11,6 +11,7 @@ from .views import my_orders
 from .views import edit_profile
 from .views import change_password
 from .views import order_detail
+from .views import seller_orders
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -23,6 +24,7 @@ urlpatterns = [
     path('forgotpassword/', forgotpassword, name='forgotpassword'),
     path('resetpassword', resetpassword, name='resetpassword'),
     path('my_orders/', my_orders, name='my_orders'),
+    path('seller_orders/', seller_orders, name='seller_orders'),
     path('edit_profile/', edit_profile, name='edit_profile'),
     path('change_password/', change_password, name='change_password'),
     path('order_detail/<int:order_id>/', order_detail, name='order_detail')

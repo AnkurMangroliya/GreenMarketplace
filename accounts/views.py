@@ -16,6 +16,7 @@ from carts.views import _cart_id
 import requests
 from .models import UserActivity, PageVisit
 from django.utils.timezone import now, timedelta
+from store.models import Product
 
 def register(request):
     if request.method == 'POST':
@@ -31,10 +32,11 @@ def register(request):
             user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email,
                                                username=username, password=password)
             user.phone_number = phone_number
+            user.is_seller = form.cleaned_data.get('is_seller', False)
             user.save()
 
             profile = UserProfile()
-            profile.user_id = user.id
+            profile.user = user
             profile.profile_picture = 'default/default-user.png'
             profile.save()
 
@@ -174,6 +176,16 @@ def resetpassword(request):
 @login_required(login_url='login')
 def my_orders(request):
     orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'accounts/my_orders.html', context)
+
+@login_required(login_url='login')
+def seller_orders(request):
+    seller_products = Product.objects.filter(user=request.user)
+    order_products = OrderProduct.objects.filter(product__in=seller_products).order_by('-created_at')
+    orders = Order.objects.filter(orderproduct__in=order_products, is_ordered=True).distinct()
     context = {
         'orders': orders,
     }
