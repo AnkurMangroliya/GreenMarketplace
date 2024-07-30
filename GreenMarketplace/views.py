@@ -17,9 +17,9 @@ def home(request):
 def about(request):
     team_members = [
         {'name': 'Harsh Moradiya', 'image': '/static/images/team/team-1.jpg'},
-        {'name': 'Ankur Mangroliya', 'image': 'team/team-1.jpg'},
-        {'name': 'Mohil Jivani', 'image': 'path/to/image3.jpg'},
-        {'name': 'Smit Maniya', 'image': 'path/to/image4.jpg'}
+        {'name': 'Ankur Mangroliya', 'image': '/static/images/team/team-2.jpg'},
+        {'name': 'Mohil Jivani', 'image': '/static/images/team/team-3.jpg'},
+        {'name': 'Smit Maniya', 'image': '/static/images/team/team-4.jpg'}
     ]
     return render(request, 'about.html', {'team_members': team_members})
 
