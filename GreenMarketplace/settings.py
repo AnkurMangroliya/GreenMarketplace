@@ -35,7 +35,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
-    'accounts.middleware.UserActivityMiddleware'
+    'accounts.middleware.ActiveUserMiddleware'
 ]
 
 SESSION_EXPIRE_SECONDS = 3600

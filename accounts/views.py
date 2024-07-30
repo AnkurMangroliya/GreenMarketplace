@@ -17,6 +17,7 @@ import requests
 from .models import UserActivity, PageVisit
 from django.utils.timezone import now, timedelta
 from store.models import Product
+from .middleware import ActiveUserMiddleware
 
 def register(request):
     if request.method == 'POST':
@@ -109,13 +110,14 @@ def dashboard(request):
     orders_count = orders.count()
     userprofile = UserProfile.objects.get(user_id=request.user.id)
     active_threshold = now() - timedelta(minutes=5)
-    active_users = UserActivity.objects.filter(last_activity__gte=active_threshold).count()
+    active_count = ActiveUserMiddleware.get_active_user_count()
+    total_active_count = ActiveUserMiddleware.get_total_active_user_count()
     total_visits = PageVisit.objects.count()
     context = {
         'orders_count': orders_count,
         'userprofile': userprofile,
-        'active_users': active_users,
-        'total_visits': total_visits,
+        'active_users': active_count,
+        'total_visits': total_active_count,
     }
     return render(request, 'accounts/dashboard.html', context)
 
