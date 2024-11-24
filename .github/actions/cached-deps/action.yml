@@ -1,5 +1,10 @@
 name: "Get & cache Dependencies."
 description: 'Getthe dependencies and (via pip) and cache them.'
+inputs:
+  caching:
+    description: "Whether to cache dependencies or not."
+    required: false
+    default: 'true'
 runs:
   using: 'composite'
   steps:
@@ -13,6 +18,7 @@ runs:
         source venv/bin/activate
       shell: bash
     - name: Set up dependency caching for faster installs
+      if: inputs.caching == 'true'
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
