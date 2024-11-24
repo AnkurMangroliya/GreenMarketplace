@@ -33,5 +33,5 @@ runs:
       id: install
       run: |
         pip install -r requirements.txt
-        echo "::set-output name:cache::'${{ inputs.caching }}'"
+        echo "::set-output name=cache::'${{ inputs.caching }}'"
       shell: bash 
