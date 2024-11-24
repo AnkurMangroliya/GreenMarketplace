@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Product, ReviewRating, ProductGallery
 import admin_thumbnails
-
+# include.
 
 @admin_thumbnails.thumbnail('image')
 class ProductGalleryInline(admin.TabularInline):
