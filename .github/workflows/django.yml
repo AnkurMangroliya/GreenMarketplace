@@ -26,6 +26,16 @@ jobs:
       uses: actions/checkout@v4
     - name: Load & cache Dependencies.
       uses: ./.github/actions/cached-deps
+    - name: Build the application
+      run: |
+        mkdir dist
+        python manage.py collectstatic --noinput
+        echo "Build output here" > dist/output.txt
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-files
+        path: ./dist
     - name: Run Tests
       run: |
         python manage.py test
@@ -41,6 +51,6 @@ jobs:
           name: dist-files
           path: ./dist
       - name: Output contents
-        run: ls
+        run: ls ./dist
       - name: Deploy site
-        run: echo "Deploying.."
+        run: echo "Deploying.. ./dist"
