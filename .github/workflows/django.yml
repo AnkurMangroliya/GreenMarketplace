@@ -7,18 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout the code
-      uses: actions/checkout@v4
-    - name: Load & cache Dependencies.
-      uses: ./.github/actions/cached-deps
-    - name: Run Tests
-      run: |
-        python manage.py test
   test:
-    needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout the code
@@ -29,3 +18,29 @@ jobs:
       run: |
         pip install pytest pytest-cov
         pytest test_sample.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+  build:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+    - name: Load & cache Dependencies.
+      uses: ./.github/actions/cached-deps
+    - name: Run Tests
+      run: |
+        python manage.py test
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Get build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+          path: ./dist
+      - name: Output contents
+        run: ls
+      - name: Deploy site
+        run: echo "Deploying.."
