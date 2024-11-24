@@ -25,9 +25,12 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v4
     - name: Load & cache Dependencies.
+      id: cache-deps
       uses: ./.github/actions/cached-deps
-      # with: 
-        # caching: 'false'
+      with: 
+        caching: 'false'
+    - name: Output information 
+      run: echo "cache used? ${{ steps.cache-deps.outputs.used-cache }}"
     - name: Build the application
       run: |
         mkdir dist
