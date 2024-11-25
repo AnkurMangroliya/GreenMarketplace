@@ -10,7 +10,7 @@ function run() {
     
     //@2 upload file
     const s3Uri = `s3://${bucket}`
-    exec.exec(`aws s3 sync ${distFolder} ${s3Uri}  --region @{buckerRegion}`)
+    exec.exec(`aws s3 sync ${distFolder} ${s3Uri}  --region @{bucketRegion}`)
 
     core.notice('Hello from the custom JavaScript Action! ')
 }
