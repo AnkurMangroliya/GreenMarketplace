@@ -58,4 +58,10 @@ jobs:
       - name: Output contents
         run: ls ./dist
       - name: Deploy site
-        run: echo "Deploying.. ./dist"
+        uses: ./.github/actions/deploy-s3-javascript
+        env:
+          AWS_ACCESS_KEY_ID: ${{secret.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secret.AWS_SECRET_ACCESS_KEY}}
+        with:
+          bucket: greenmarketplace-action-hosting
+          dist-folder: ./dist
