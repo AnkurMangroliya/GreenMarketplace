@@ -1,18 +1,23 @@
-const core = require('@actions/core')
-const github = require('@actions/github')
-const exec = require("@actions/exec")
+const core = require('@actions/core');
+const exec = require('@actions/exec');
 
-function run() {
-    //1) Get some inout values
-    const bucket = core.getInput('bucket',{ required: true })
-    const bucketRegion = core.getInput('bucket-region',{ required: true })
-    const distFolder = core.getIDToken('dist-folder',{ require: true })
-    
-    //@2 upload file
-    const s3Uri = `s3://${bucket}`
-    exec.exec(`aws s3 sync ${distFolder} ${s3Uri}  --region @{bucketRegion}`)
+async function run() {
+    try {
+        // Get input values
+        const bucket = core.getInput('bucket', { required: true });
+        const bucketRegion = core.getInput('bucket-region', { required: false });
+        const distFolder = core.getInput('dist-folder', { required: true });
 
-    core.notice('Hello from the custom JavaScript Action! ')
+        // Upload files to S3
+        const s3Uri = `s3://${bucket}`;
+        core.info(`Uploading files from ${distFolder} to ${s3Uri} in region ${bucketRegion}...`);
+        
+        await exec.exec(`aws s3 sync ${distFolder} ${s3Uri} --region ${bucketRegion}`);
+
+        core.notice('Successfully deployed to AWS S3!');
+    } catch (error) {
+        core.setFailed(`Deployment failed: ${error.message}`);
+    }
 }
 
 run();
