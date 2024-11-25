@@ -67,7 +67,7 @@ jobs:
           aws-region: us-east-1
       - name: Deploy site
         id: deploy
-        uses: AnkurMangroliya/GreenMarketplace/.github/actions/deploy-s3-docker
+        uses: ./.github/actions/deploy-s3-doc
         with:
           bucket: greenmarketplace-g-action-1
           dist-folder: ./dist
