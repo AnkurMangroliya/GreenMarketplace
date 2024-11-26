@@ -24,46 +24,26 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
+    - name: Load & cache Dependencies.
+      id: cache-deps
+      uses: ./.github/actions/cached-deps
+      with: 
+        caching: 'false'
+    - name: Output information 
+      run: echo "cache used? ${{ steps.cache-deps.outputs.used-cache }}"
+    - name: Build the application
+      run: |
+        mkdir dist
+        python manage.py collectstatic --noinput
+        echo "Build output here" > dist/output.txt
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Build and Push Docker Image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/django-app:latest
-  # build:
-  #   needs: [test]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout the code
-  #     uses: actions/checkout@v4
-  #   - name: Load & cache Dependencies.
-  #     id: cache-deps
-  #     uses: ./.github/actions/cached-deps
-  #     with: 
-  #       caching: 'false'
-  #   - name: Output information 
-  #     run: echo "cache used? ${{ steps.cache-deps.outputs.used-cache }}"
-  #   - name: Build the application
-  #     run: |
-  #       mkdir dist
-  #       python manage.py collectstatic --noinput
-  #       echo "Build output here" > dist/output.txt
-  #   - name: Upload artifacts
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: dist-files
-  #       path: ./dist
-  #   - name: Run Tests
-  #     run: |
-  #       python manage.py test
+        name: dist-files
+        path: ./dist
+    - name: Run Tests
+      run: |
+        python manage.py test
   deploy:
     permissions:
       id-token: write
@@ -81,24 +61,24 @@ jobs:
       - name: Output contents
         run: ls 
 
-      - name: Get AWS permissions
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: arn:aws:iam::211125668911:role/Github-demo-1
-          aws-region: us-east-1
+      # - name: Get AWS permissions
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     role-to-assume: arn:aws:iam::211125668911:role/Github-demo-1
+      #     aws-region: us-east-1
 
-      - name: Deploy site
-        id: deploy
-        uses: ./.github/actions/deploy-s3-doc
-        with:
-          bucket: greenmarketplace-g-action-2
-          dist-folder: ./dist
-      - name: Output information
-        run: |
-          echo "Live URL: ${{ steps.deploy.outputs.website-url }}"
+      # - name: Deploy site
+      #   id: deploy
+      # using docker custom action.............................................................
+      #   uses: ./.github/actions/deploy-s3-doc
+      #   with:
+      #     bucket: greenmarketplace-g-action-2
+      #     dist-folder: ./dist
+      # - name: Output information
+      #   run: |
+      #     echo "Live URL: ${{ steps.deploy.outputs.website-url }}"
       # using javascript custom actions........................................................
         # uses: ./.github/actions/deploy-s3-javascript
         # with:
         #   bucket: greenmarketplace-g-action-1
         #   dist-folder: ./dist
-      # using docker custom action.............................................................

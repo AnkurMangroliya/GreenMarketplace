@@ -1,0 +1,67 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+    - name: Load & cache Dependencies.
+      uses: ./.github/actions/cached-deps
+    - name: Test with pytest
+      run: |
+        pip install pytest pytest-cov
+        pytest test_sample.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+  build:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/django-app:latest
+    - name: Output Docker Image tags
+      run: |
+        echo "Image Tag: ${{secrets.DOCKER_USERNAME}}/django-app:${{github.sha}}"
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Get AWS permissions
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::211125668911:role/Github-demo-1
+          aws-region: us-east-1
+
+      - name: Deploy site
+        run: |
+          # Pull the Docker image
+          docker pull ${{ secrets.DOCKER_USERNAME }}/django-app:${{ github.sha }}
+
+      - name: Output information
+        run: |
+          echo "Pulling done."
