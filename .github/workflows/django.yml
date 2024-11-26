@@ -69,16 +69,16 @@ jobs:
 
       - name: Deploy site
         id: deploy
-      #   uses: ./.github/actions/deploy-s3-doc
-      #   with:
-      #     bucket: greenmarketplace-g-action-1
-      #     dist-folder: ./dist
-      # - name: Output information
-      #   run: |
-      #     echo "Live URL: ${{ steps.deploy.outputs.website-url }}"
-      # using javascript custom actions........................................................
-        uses: ./.github/actions/deploy-s3-javascript
+        uses: ./.github/actions/deploy-s3-doc
         with:
-          bucket: greenmarketplace-g-action-1
+          bucket: greenmarketplace-g-action-2
           dist-folder: ./dist
+      - name: Output information
+        run: |
+          echo "Live URL: ${{ steps.deploy.outputs.website-url }}"
+      # using javascript custom actions........................................................
+        # uses: ./.github/actions/deploy-s3-javascript
+        # with:
+        #   bucket: greenmarketplace-g-action-1
+        #   dist-folder: ./dist
       # using docker custom action.............................................................
