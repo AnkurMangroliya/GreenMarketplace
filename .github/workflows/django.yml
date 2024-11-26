@@ -1,0 +1,82 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+    - name: Load & cache Dependencies.
+      uses: ./.github/actions/cached-deps
+    - name: Test with pytest
+      run: |
+        pip install pytest pytest-cov
+        pytest test_sample.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+  build:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v4
+    - name: Load & cache Dependencies.
+      id: cache-deps
+      uses: ./.github/actions/cached-deps
+      with: 
+        caching: 'false'
+    - name: Output information 
+      run: echo "cache used? ${{ steps.cache-deps.outputs.used-cache }}"
+    - name: Build the application
+      run: |
+        mkdir dist
+        python manage.py collectstatic --noinput
+        echo "Build output here" > dist/output.txt
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-files
+        path: ./dist
+    - name: Run Tests
+      run: |
+        python manage.py test
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Get build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+          path: ./dist
+      - name: Output contents
+        run: ls 
+      - name: Get AWS permissions
+        uses: aws-actions/configure-aws-credentials
+        with:
+          role-to-assume: arn:aws:iam::211125668911:role/Github-demo-1
+          aws-region: us-east-1
+      - name: Deploy site
+        id: deploy
+      #   uses: ./.github/actions/deploy-s3-doc
+      #   with:
+      #     bucket: greenmarketplace-g-action-1
+      #     dist-folder: ./dist
+      # - name: Output information
+      #   run: |
+      #     echo "Live URL: ${{ steps.deploy.outputs.website-url }}"
+      # using javascript custom actions........................................................
+        uses: ./.github/actions/deploy-s3-javascript
+        with:
+          bucket: greenmarketplace-g-action-1
+          dist-folder: ./dist
+      # using docker custom action.............................................................
