@@ -60,6 +60,9 @@ jobs:
           path: ./dist
       - name: Output contents
         run: ls 
+      - name: Debug Custom Actions
+        run: ls -R .github/actions/
+
       - name: Get AWS permissions
         uses: aws-actions/configure-aws-credentials
         with:
